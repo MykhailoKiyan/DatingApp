@@ -1,23 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿namespace DatingApp.API.Controllers {
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using System.Threading.Tasks;
+	using DatingApp.API.Data;
+	using Microsoft.AspNetCore.Mvc;
 
-namespace DatingApp.API.Controllers {
 	[Route("api/[controller]")]
 	[ApiController]
 	public class ValuesController : ControllerBase {
+		private readonly DataContext context;
+		public ValuesController(DataContext context) {
+			this.context = context;
+		}
 		// GET api/values
 		[HttpGet]
-		public ActionResult<IEnumerable<string>> Get() {
-			return new string[] { "value1", "value2" };
+		public IActionResult GetValues() {
+			var values = this.context.Values.ToList();
+			return this.Ok(values);
 		}
 
 		// GET api/values/5
 		[HttpGet("{id}")]
-		public ActionResult<string> Get(int id) {
-			return "value";
+		public IActionResult GetValue(int id) {
+			var value =
+				this.context.Values.FirstOrDefault(item => item.Id == id);
+			return this.Ok(value);
 		}
 
 		// POST api/values
