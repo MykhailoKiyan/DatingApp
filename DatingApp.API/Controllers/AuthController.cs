@@ -31,7 +31,6 @@
 
 		[HttpPost("register")]
 		public async Task<IActionResult> Register(UserForRegisterDto userDto) {
-
 			userDto.Username = userDto.Username.GetСorrectUsername();
 
 			if (await this.repository.UserExists(userDto.Username))
