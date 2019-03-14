@@ -22,11 +22,11 @@ export class RegisterComponent implements OnInit {
     this.authService
       .register(this.model)
       .subscribe(
-        response => {
-          console.log('Registration succesful');
+        next => {
+          console.log('Registration successful');
         },
-      error => {
-        console.log(error);
+        error => {
+          console.log(error);
         }
       );
   }
