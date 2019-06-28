@@ -1,0 +1,38 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using AutoMapper;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using DatingApp.API.Data;
+using DatingApp.API.Dtos;
+
+namespace DatingApp.API.Controllers {
+	[Authorize]
+	[Route("/api/[controller]")]
+	[ApiController]
+	public class UsersController : ControllerBase {
+		private readonly IDatingRepository repository;
+		private readonly IMapper mapper;
+
+		public UsersController(IDatingRepository repository, IMapper mapper) {
+			this.repository = repository;
+			this.mapper = mapper;
+		}
+
+		[HttpGet]
+		public async Task<IActionResult> GetUsers() {
+			var users = await this.repository.GetUsers();
+			var usersToReturn = this.mapper.Map<IEnumerable<UserForListDto>>(users);
+			return Ok(usersToReturn);
+		}
+
+		[HttpGet("{id}")]
+		public async Task<IActionResult> GetUser(int id) {
+			var user = await this.repository.GetUser(id);
+			var userToReturn = this.mapper.Map<UserForDetailedDto>(user);
+			return Ok(userToReturn);
+		}
+	}
+}

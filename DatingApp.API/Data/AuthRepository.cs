@@ -23,14 +23,14 @@
 			if (user == null)
 				return null;
 
-			if(!this.VarifiPasswordHash(password, user.PasswordHash, user.PasswordSalt))
+			if(!VarifiPasswordHash(password, user.PasswordHash, user.PasswordSalt))
 				return null;
 
 			return user;
 		}
 
 		public async Task<User> Register(User user, string password) {
-			(user.PasswordHash, user.PasswordSalt) = this.CreatePasswordHash(password);
+			(user.PasswordHash, user.PasswordSalt) = CreatePasswordHash(password);
 
 			await this.context.Users.AddAsync(user);
 			await this.context.SaveChangesAsync();
@@ -45,7 +45,7 @@
 				return false;
 		}
 
-		private (byte[] passwordHash, byte[] passwordSalt) CreatePasswordHash(string password) {
+		public static (byte[] passwordHash, byte[] passwordSalt) CreatePasswordHash(string password) {
 			using (var hmac = new System.Security.Cryptography.HMACSHA512()) {
 				return (
 					passwordHash: hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password)),
@@ -53,7 +53,7 @@
 			}
 		}
 
-		private bool VarifiPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt) {
+		public static bool VarifiPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt) {
 			using(var hmac = new System.Security.Cryptography.HMACSHA512(passwordSalt)) {
 				var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
 				return computedHash.IsEqual(passwordHash);

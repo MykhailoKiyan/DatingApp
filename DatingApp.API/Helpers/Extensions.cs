@@ -11,5 +11,11 @@ namespace DatingApp.API.Helpers {
 			response.Headers.Add("Access-Control-Expose-Headers", "Application-Error");
 			response.Headers.Add("Access-Control-Allow-Origin", "*");
 		}
+
+		public static int CalculateAge(this DateTime data) {
+			var diff = DateTime.Today.Year - data.Year;
+			if (data.AddYears(diff) > DateTime.Today) diff--;
+			return diff;
+		}
 	}
 }
