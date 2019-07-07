@@ -261,5 +261,3 @@ paket-files/
 __pycache__/
 *.pyc
 /.vs/*
-
-./DatingApp.API/appsettings.json
