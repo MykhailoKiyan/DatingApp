@@ -14,6 +14,6 @@ namespace DatingApp.API.Data {
 
 		Task<User> GetUser(int id);
 
-		Task<bool> SaveAllAsync();
+		Task<bool> SaveAll();
 	}
 }

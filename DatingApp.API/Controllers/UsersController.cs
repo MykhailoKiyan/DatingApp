@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using System.Threading.Tasks;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using DatingApp.API.Data;
@@ -33,6 +34,23 @@ namespace DatingApp.API.Controllers {
 			var user = await this.repository.GetUser(id);
 			var userToReturn = this.mapper.Map<UserForDetailedDto>(user);
 			return Ok(userToReturn);
+		}
+
+		[HttpPut("{id}")]
+		public async Task<IActionResult> UpdateUser(int id, UserForUpdateDto userDto) {
+            int currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+			if (id != currentUserId) {
+				return Unauthorized();
+			}
+
+            var user = await this.repository.GetUser(id);
+            this.mapper.Map(userDto, user);
+
+            if (await this.repository.SaveAll()) {
+                return NoContent();
+            }
+
+            throw new Exception($"Updating with user id={id} failed on save!");
 		}
 	}
 }

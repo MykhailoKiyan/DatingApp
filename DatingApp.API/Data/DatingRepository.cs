@@ -33,7 +33,7 @@ namespace DatingApp.API.Data {
 				.ToListAsync();
 		}
 
-		public async Task<bool> SaveAllAsync() {
+		public async Task<bool> SaveAll() {
 			return await this.context.SaveChangesAsync() > 0;
 		}
 	}

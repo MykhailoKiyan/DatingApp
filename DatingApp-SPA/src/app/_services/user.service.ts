@@ -5,18 +5,22 @@ import { Observable } from 'rxjs';
 import { User } from '../_moduls/user';
 
 @Injectable({
-  providedIn: 'root'
+	providedIn: 'root'
 })
 export class UserService {
-  baseUrl: string = environment.baseUrl;
+	baseUrl: string = environment.baseUrl;
 
-  constructor(private http: HttpClient) { }
+	constructor(private http: HttpClient) { }
 
-  getUsers(): Observable<User[]> {
-    return this.http.get<User[]>(this.baseUrl + 'users');
-  }
+	getUsers(): Observable<User[]> {
+		return this.http.get<User[]>(this.baseUrl + 'users');
+	}
 
-  getUser(id: number): Observable<User> {
-    return this.http.get<User>(this.baseUrl + 'users\\' + id);
-  }
+	getUser(id: number): Observable<User> {
+		return this.http.get<User>(this.baseUrl + 'users\\' + id);
+	}
+
+	updateUser(id: number, user: User) {
+		return this.http.put<User>(this.baseUrl + 'users\\' + id, user);
+	}
 }
