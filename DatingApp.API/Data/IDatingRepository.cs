@@ -5,7 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace DatingApp.API.Data {
+
 	public interface IDatingRepository {
+
 		void Add<T>(T entity) where T : class;
 
 		void Delete<T>(T entity) where T : class;
@@ -15,6 +17,8 @@ namespace DatingApp.API.Data {
 		Task<User> GetUser(int id);
 
 		Task<Photo> GetPhoto(int id);
+
+		Task<Photo> GetMainPhotoForUser(int userId);
 
 		Task<bool> SaveAll();
 	}

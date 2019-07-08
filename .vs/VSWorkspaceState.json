@@ -1,15 +1,16 @@
 {
   "ExpandedNodes": [
     "",
-    "\\DatingApp-SPA",
     "\\DatingApp-SPA\\src",
     "\\DatingApp-SPA\\src\\app",
     "\\DatingApp-SPA\\src\\app\\members",
-    "\\DatingApp-SPA\\src\\app\\members\\member-detail",
     "\\DatingApp-SPA\\src\\app\\members\\member-list",
     "\\DatingApp-SPA\\src\\app\\_resolvers",
-    "\\DatingApp-SPA\\src\\app\\_services"
+    "\\DatingApp-SPA\\src\\app\\_services",
+    "\\DatingApp.API",
+    "\\DatingApp.API\\Data",
+    "\\DatingApp.API\\Helpers",
+    "\\DatingApp.API\\Models"
   ],
-  "SelectedNode": "\\DatingApp-SPA\\src\\app\\members\\member-detail\\member-detail.component.html",
   "PreviewInSolutionExplorer": false
 }
