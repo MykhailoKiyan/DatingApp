@@ -4,11 +4,11 @@ import { MemberEditComponent } from '../members/member-edit/member-edit.componen
 
 @Injectable()
 export class PreventUnsavedChanges implements CanDeactivate<MemberEditComponent> {
-    canDeactivate(component: MemberEditComponent): boolean {
-        if(component.editForm.dirty) {
-            return confirm('Are you sure you want to continue? Any unsaved changes will be lost!');
-        } else {
-            return true;
-        }
-    }
+	canDeactivate(component: MemberEditComponent): boolean {
+			if (component.editForm.dirty) {
+					return confirm('Are you sure you want to continue? Any unsaved changes will be lost!');
+			} else {
+					return true;
+			}
+	}
 }

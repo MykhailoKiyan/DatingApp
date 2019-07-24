@@ -7,15 +7,12 @@
         type="button"
         (click)="setMainPhoto(photo)"
         [ngClass]="photo.isMain ? 'btn-success active' : 'btn-secondary'"
-        [disabled]="photo.isMain"
-      >Main</button>
+        [disabled]="photo.isMain">Main</button>
       <button
         class="btn btn-sm btn-danger"
         type="button"
         (click)="deletePhoto(photo.id)"
-        [disabled]="photo.isMain"
-      ><i class="fa fa-trash-o"></i>
-      </button>
+        [disabled]="photo.isMain"><i class="fa fa-trash-o"></i></button>
     </div>
   </div>
 </div>
@@ -31,10 +28,8 @@
       <i class="fa fa-upload fa-3x"></i>
         Drop Photos Here
     </div>
-
     Multiple
     <input type="file" ng2FileSelect [uploader]="uploader" multiple /><br />
-
     Single
     <input type="file" ng2FileSelect [uploader]="uploader" />
   </div>
@@ -79,7 +74,8 @@
         (click)="uploader.uploadAll()"
         [disabled]="!uploader.getNotUploadedItems().length"
       >
-        <span class="fa fa-upload"></span>Upload
+        <span class="fa fa-upload"></span>
+        Upload
       </button>
       <button
         type="button"
@@ -87,7 +83,8 @@
         (click)="uploader.cancelAll()"
         [disabled]="!uploader.isUploading"
       >
-        <span class="fa fa-ban"></span>Cancel
+        <span class="fa fa-ban"></span>
+        Cancel
       </button>
       <button
         type="button"
@@ -95,7 +92,8 @@
         (click)="uploader.clearQueue()"
         [disabled]="!uploader.queue.length"
       >
-        <span class="fa fa-trash"></span>Remove
+        <span class="fa fa-trash"></span>
+        Remove
       </button>
     </div>
   </div>

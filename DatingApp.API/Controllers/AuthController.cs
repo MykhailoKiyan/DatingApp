@@ -39,13 +39,13 @@
 			if (await this.repository.UserExists(userDto.Username))
 				return this.BadRequest("Username already exists");
 
-			var userToCreate = new User {
-				Username = userDto.Username
-			};
+			var userToCreate = this.mapper.Map<User>(userDto);
 
 			await this.repository.Register(userToCreate, userDto.Password);
 
-			return this.StatusCode(201);
+			var userToReturn = this.mapper.Map<UserForDetailedDto>(userToCreate);
+
+			return this.CreatedAtRoute("GetUser", new { Controller="Users", id=userToCreate.Id }, userToReturn);
 		}
 
 		[HttpPost("login")]
