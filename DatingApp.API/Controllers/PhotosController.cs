@@ -34,7 +34,7 @@ namespace DatingApp.API.Controllers {
             this.mapper = mapper;
             this.cloudinaryOptions = cloudinaryOptions;
 
-            Account account = new Account {
+            var account = new Account {
                 Cloud = this.cloudinaryOptions.Value.CloudName,
                 ApiKey = this.cloudinaryOptions.Value.ApiKey,
                 ApiSecret = this.cloudinaryOptions.Value.ApiSecret
@@ -49,7 +49,7 @@ namespace DatingApp.API.Controllers {
 
 			var photoDto = this.mapper.Map<PhotoForReturnDto>(photo);
 
-			return Ok(photoDto);
+			return this.Ok(photoDto);
 		}
 
         [HttpPost]
@@ -58,7 +58,7 @@ namespace DatingApp.API.Controllers {
 				[FromForm]PhotoForCreationDto photoDto) {
             int currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             if (userId != currentUserId) {
-                return Unauthorized();
+                return this.Unauthorized();
             }
 
             var user = await this.repository.GetUser(userId);

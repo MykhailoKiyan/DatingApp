@@ -8,8 +8,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using DatingApp.API.Data;
 using DatingApp.API.Dtos;
+using DatingApp.API.Helpers;
 
 namespace DatingApp.API.Controllers {
+	[ServiceFilter(typeof(LogUserActivityFilter))]
 	[Authorize]
 	[Route("/api/[controller]")]
 	[ApiController]

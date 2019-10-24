@@ -25,8 +25,6 @@
 
     public class Startup {
 		public Startup(IConfiguration configuration, IHostingEnvironment env) {
-			// this.Configuration = configuration;
-
 			var builder = new ConfigurationBuilder()
 				.SetBasePath(env.ContentRootPath)
 				.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
@@ -61,6 +59,8 @@
 			services.AddScoped<IAuthRepository, AuthRepository>();
 
 			services.AddScoped<IDatingRepository, DatingRepository>();
+
+			services.AddScoped<LogUserActivityFilter>();
 
 			services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 				.AddJwtBearer(option => {
