@@ -24,8 +24,18 @@
 	using DatingApp.API.Helpers;
 
     public class Startup {
-		public Startup(IConfiguration configuration) {
-			this.Configuration = configuration;
+		public Startup(IConfiguration configuration, IHostingEnvironment env) {
+			// this.Configuration = configuration;
+
+			var builder = new ConfigurationBuilder()
+				.SetBasePath(env.ContentRootPath)
+				.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+				.AddJsonFile("appsettings.Security.json", optional: true, reloadOnChange: true)
+				.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
+				.AddJsonFile($"appsettings.{env.EnvironmentName}.Security.json", optional: true, reloadOnChange: true)
+				.AddEnvironmentVariables();
+
+			this.Configuration = builder.Build();
 		}
 
 		public IConfiguration Configuration { get; }
