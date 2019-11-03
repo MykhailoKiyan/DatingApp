@@ -25,31 +25,40 @@ namespace DatingApp.API.Controllers {
 		}
 
 		[HttpGet]
-		public async Task<IActionResult> GetUsers() {
-			var users = await this.repository.GetUsers();
+		public async Task<IActionResult> GetUsers([FromQuery]UserParams userParams) {
+			var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+			var currentUser = await this.repository.GetUser(currentUserId);
+			userParams.UserId = currentUserId;
+			if (string.IsNullOrEmpty(userParams.Gender)) {
+				userParams.Gender = currentUser.Gender == "male" ? "female" : "male";
+			}
+
+
+			var users = await this.repository.GetUsers(userParams);
 			var usersToReturn = this.mapper.Map<IEnumerable<UserForListDto>>(users);
-			return Ok(usersToReturn);
+			this.Response.AddPagination(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages);
+			return this.Ok(usersToReturn);
 		}
 
 		[HttpGet("{id}", Name="GetUser")]
 		public async Task<IActionResult> GetUser(int id) {
 			var user = await this.repository.GetUser(id);
 			var userToReturn = this.mapper.Map<UserForDetailedDto>(user);
-			return Ok(userToReturn);
+			return this.Ok(userToReturn);
 		}
 
 		[HttpPut("{id}")]
 		public async Task<IActionResult> UpdateUser(int id, UserForUpdateDto userDto) {
             int currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
 			if (id != currentUserId) {
-				return Unauthorized();
+				return this.Unauthorized();
 			}
 
             var user = await this.repository.GetUser(id);
             this.mapper.Map(userDto, user);
 
             if (await this.repository.SaveAll()) {
-                return NoContent();
+                return this.NoContent();
             }
 
             throw new Exception($"Updating with user id={id} failed on save!");

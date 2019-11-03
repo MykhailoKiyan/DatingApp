@@ -1,2 +1,2 @@
 cd DatingApp.API
-dotnet run watch
+dotnet watch run
