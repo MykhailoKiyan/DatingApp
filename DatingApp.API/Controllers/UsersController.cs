@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using DatingApp.API.Data;
 using DatingApp.API.Dtos;
 using DatingApp.API.Helpers;
+using DatingApp.API.Models;
 
 namespace DatingApp.API.Controllers {
 	[ServiceFilter(typeof(LogUserActivityFilter))]
@@ -49,7 +50,7 @@ namespace DatingApp.API.Controllers {
 
 		[HttpPut("{id}")]
 		public async Task<IActionResult> UpdateUser(int id, UserForUpdateDto userDto) {
-            int currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+			int currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
 			if (id != currentUserId) {
 				return this.Unauthorized();
 			}
@@ -62,6 +63,32 @@ namespace DatingApp.API.Controllers {
             }
 
             throw new Exception($"Updating with user id={id} failed on save!");
+		}
+
+		[HttpPost("{id}/Like/{recipientId}")]
+		public async Task<IActionResult> LikeUser(int id, int recipientId) {
+			int currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+			if (currentUserId != id) {
+				return this.Unauthorized();
+			}
+
+			var like = await this.repository.GetLike(id, recipientId);
+			if (like != null) {
+				return this.BadRequest("You already like this user");
+			}
+
+			var recipient = await this.repository.GetUser(recipientId);
+			if (recipient == null) {
+				return this.NotFound();
+			}
+
+			like = new Like { LikerId = id, LikeeId = recipientId };
+			this.repository.Add(like);
+			if (await this.repository.SaveAll()) {
+				return this.Ok();
+			} else {
+				return this.BadRequest("Failed to like user");
+			}
 		}
 	}
 }
