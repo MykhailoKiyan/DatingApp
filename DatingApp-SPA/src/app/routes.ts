@@ -1,16 +1,17 @@
+import { Routes } from '@angular/router';
+import { HomeComponent } from './home/home.component';
+import { MemberListComponent } from './members/member-list/member-list.component';
+import { MemberDetailComponent } from './members/member-detail/member-detail.component';
+import { MessagesComponent } from './messages/messages.component';
+import { ListsComponent } from './lists/lists.component';
+import { AuthGuard } from './_guards/auth.guard';
+import { MemberDetailResolver } from './_resolvers/member-detail.resolver';
+import { MemberListResolver } from './_resolvers/member-list.resolver';
+import { MemberEditComponent } from './members/member-edit/member-edit.component';
+import { MemberEditResolver } from './_resolvers/member-edit.resolver';
+import { PreventUnsavedChanges } from './_guards/prevent-unsaved-changes.guard';
+import { MessagesResolver } from './_resolvers/messages.resolver';
 import { ListsResolver } from './_resolvers/lists.resolver';
-import { Routes } from "@angular/router";
-import { HomeComponent } from "./home/home.component";
-import { MemberListComponent } from "./members/member-list/member-list.component";
-import { MemberDetailComponent } from "./members/member-detail/member-detail.component";
-import { MessagesComponent } from "./messages/messages.component";
-import { ListsComponent } from "./lists/lists.component";
-import { AuthGuard } from "./_guards/auth.guard";
-import { MemberDetailResolver } from "./_resolvers/member-detail.resolver";
-import { MemberListResolver } from "./_resolvers/member-list.resolver";
-import { MemberEditComponent } from "./members/member-edit/member-edit.component";
-import { MemberEditResolver } from "./_resolvers/member-edit.resolver";
-import { PreventUnsavedChanges } from "./_guards/prevent-unsaved-changes.guard";
 
 export const appRoutes: Routes = [
 	{
@@ -48,7 +49,10 @@ export const appRoutes: Routes = [
 			},
 			{
 				path: 'messages',
-				component: MessagesComponent
+				component: MessagesComponent,
+				resolve: {
+					messages: MessagesResolver
+				}
 			},
 			{
 				path: 'lists',

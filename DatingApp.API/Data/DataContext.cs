@@ -13,6 +13,8 @@
 
 		public DbSet<Like> Likes { get; set; }
 
+		public DbSet<Message> Messages { get; set; }
+
 		protected override void OnModelCreating(ModelBuilder modelBuilder) {
 			modelBuilder.Entity<Like>()
 				.HasKey(key => new { key.LikerId, key.LikeeId });
@@ -27,6 +29,16 @@
 				.HasOne(user => user.Liker)
 				.WithMany(user => user.Likees)
 				.HasForeignKey(user => user.LikerId)
+				.OnDelete(DeleteBehavior.Restrict);
+
+			modelBuilder.Entity<Message>()
+				.HasOne(u => u.Sender)
+				.WithMany(m => m.MessagesSent)
+				.OnDelete(DeleteBehavior.Restrict);
+
+			modelBuilder.Entity<Message>()
+				.HasOne(u => u.Recipient)
+				.WithMany(m => m.MessagesRecived)
 				.OnDelete(DeleteBehavior.Restrict);
 		}
 	}

@@ -14,7 +14,7 @@ using DatingApp.API.Models;
 namespace DatingApp.API.Controllers {
 	[ServiceFilter(typeof(LogUserActivityFilter))]
 	[Authorize]
-	[Route("/api/[controller]")]
+	[Route("api/[controller]")]
 	[ApiController]
 	public class UsersController : ControllerBase {
 		private readonly IDatingRepository repository;
