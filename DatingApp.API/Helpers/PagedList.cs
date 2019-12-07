@@ -23,11 +23,10 @@ namespace DatingApp.API.Helpers {
 		}
 
 		public static async Task<PagedList<T>> CreateAsync(IQueryable<T> source, int pageNumber, int pageSize) {
-			var count = source.CountAsync();
+			var countTask = source.CountAsync();
 			var numberToSkip = (pageNumber - 1) * pageSize;
-			var items = source.Skip(numberToSkip).Take(pageSize).ToListAsync();
-			Task.WaitAll(count, items);
-			return new PagedList<T>(items.Result, count.Result, pageNumber, pageSize);
+			var itemsTask = source.Skip(numberToSkip).Take(pageSize).ToListAsync();
+			return new PagedList<T>(await itemsTask, await countTask, pageNumber, pageSize);
 		}
 	}
 }
