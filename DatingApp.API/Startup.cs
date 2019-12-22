@@ -14,6 +14,7 @@
 	using Microsoft.AspNetCore.Mvc;
 	using Microsoft.AspNetCore.Diagnostics;
 	using Microsoft.EntityFrameworkCore;
+	using Microsoft.EntityFrameworkCore.Diagnostics;
 	using Microsoft.Extensions.Configuration;
 	using Microsoft.Extensions.DependencyInjection;
 	using Microsoft.IdentityModel.Tokens;
@@ -40,6 +41,44 @@
 
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services) {
+			services.AddDbContext<DataContext>(i =>
+				i
+					.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection"))
+					.ConfigureWarnings(w => w.Ignore(CoreEventId.IncludeIgnoredWarning))
+				);
+
+			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+				.AddJsonOptions(o => {
+					o.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+				});
+
+			services.AddCors();
+
+            services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
+
+			services.AddAutoMapper();
+
+			services.AddTransient<Seed>();
+
+			services.AddScoped<IAuthRepository, AuthRepository>();
+
+			services.AddScoped<IDatingRepository, DatingRepository>();
+
+			services.AddScoped<LogUserActivityFilter>();
+
+			services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+				.AddJwtBearer(option => {
+					option.TokenValidationParameters = new TokenValidationParameters {
+						ValidateIssuerSigningKey = true,
+						IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(
+							this.Configuration.GetSection("AppSettings:Token").Value)),
+						ValidateIssuer = false,
+						ValidateAudience = false
+					};
+				});
+		}
+
+		public void ConfigureDevelopmentServices(IServiceCollection services) {
 			services.AddDbContext<DataContext>(i =>
 				i.UseSqlite(this.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -74,6 +113,7 @@
 				});
 		}
 
+
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env, Seed seeder) {
 			if(env.IsDevelopment()) {
@@ -95,13 +135,20 @@
 			}
 
 			// app.UseHttpsRedirection();
-			// seeder.SeedUsers();
+			seeder.SeedUsers();
 			app.UseCors(x => x
 				.AllowAnyOrigin()
 				.AllowAnyMethod()
 				.AllowAnyHeader());
 			app.UseAuthentication();
-			app.UseMvc();
+			app.UseDefaultFiles();
+			app.UseStaticFiles();
+			app.UseMvc(roots => {
+				roots.MapSpaFallbackRoute(
+					name: "spa-fallback",
+					defaults: new { controller = "Fallback", action = "Index" }
+				);
+			});
 		}
 	}
 }
