@@ -264,3 +264,4 @@ __pycache__/
 /.vs/*
 /.vs/VSWorkspaceState.json
 /.vs/
+/.vs/DatingApp/config/applicationhost.config

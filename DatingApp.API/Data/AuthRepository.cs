@@ -47,7 +47,7 @@
 				return false;
 		}
 
-		public static (byte[] passwordHash, byte[] passwordSalt) CreatePasswordHash(string password) {
+		internal static (byte[] passwordHash, byte[] passwordSalt) CreatePasswordHash(string password) {
 			using (var hmac = new System.Security.Cryptography.HMACSHA512()) {
 				return (
 					passwordHash: hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password)),

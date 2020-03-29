@@ -1,28 +1,28 @@
 ﻿namespace DatingApp.API {
-	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Threading.Tasks;
-	using System.Text;
-	using System.Net;
-	using AutoMapper;
-	using Microsoft.AspNetCore.Http;
-	using Microsoft.AspNetCore.Authentication.JwtBearer;
-	using Microsoft.AspNetCore.Builder;
-	using Microsoft.AspNetCore.Hosting;
-	using Microsoft.AspNetCore.HttpsPolicy;
-	using Microsoft.AspNetCore.Mvc;
-	using Microsoft.AspNetCore.Diagnostics;
-	using Microsoft.EntityFrameworkCore;
-	using Microsoft.EntityFrameworkCore.Diagnostics;
-	using Microsoft.Extensions.Configuration;
-	using Microsoft.Extensions.DependencyInjection;
-	using Microsoft.IdentityModel.Tokens;
-	using Microsoft.Extensions.Logging;
-	using Microsoft.Extensions.Options;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using System.Text;
+    using System.Net;
+    using AutoMapper;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.HttpsPolicy;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Diagnostics;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Diagnostics;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.IdentityModel.Tokens;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
 
-	using DatingApp.API.Data;
-	using DatingApp.API.Helpers;
+    using DatingApp.API.Data;
+    using DatingApp.API.Helpers;
 
     public class Startup {
 		public Startup(IConfiguration configuration, IHostingEnvironment env) {

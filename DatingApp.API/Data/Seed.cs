@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Newtonsoft.Json;
-
-using DatingApp.API.Models;
-
 namespace DatingApp.API.Data {
+	using System.Collections.Generic;
+	using System.Linq;
+	using Newtonsoft.Json;
+
+	using DatingApp.API.Models;
+
 	public class Seed {
 		private readonly DataContext context;
 
@@ -19,9 +19,9 @@ namespace DatingApp.API.Data {
 				user.PasswordHash = passwordHash.passwordHash;
 				user.PasswordSalt = passwordHash.passwordSalt;
 				user.Username = user.Username.ToUpper();
-				this.context.Users.Add(user);
+				context.Users.Add(user);
 			});
-			this.context.SaveChanges();
+			context.SaveChanges();
 		}
 	}
 }
