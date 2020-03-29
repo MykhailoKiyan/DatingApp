@@ -20,19 +20,19 @@
 		public async Task<User> Login(string username, string password) {
 			var user = await this.context.Users
 				.Include(p => p.Photos)
-				.FirstOrDefaultAsync(x => x.Username == username);
+				.FirstOrDefaultAsync(x => x.UserName == username);
 
 			if (user == null)
 				return null;
 
-			if(!VarifiPasswordHash(password, user.PasswordHash, user.PasswordSalt))
-				return null;
+			//if(!VarifiPasswordHash(password, user.PasswordHash, user.PasswordSalt))
+			//	return null;
 
 			return user;
 		}
 
 		public async Task<User> Register(User user, string password) {
-			(user.PasswordHash, user.PasswordSalt) = CreatePasswordHash(password);
+			//(user.PasswordHash, user.PasswordSalt) = CreatePasswordHash(password);
 
 			await this.context.Users.AddAsync(user);
 			await this.context.SaveChangesAsync();
@@ -41,7 +41,7 @@
 		}
 
 		public async Task<bool> UserExists(string username) {
-			if(await this.context.Users.AnyAsync(x => x.Username == username))
+			if(await this.context.Users.AnyAsync(x => x.UserName == username))
 				return true;
 			else
 				return false;

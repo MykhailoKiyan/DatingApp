@@ -20,9 +20,13 @@
     using Microsoft.IdentityModel.Tokens;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
+	using Microsoft.AspNetCore.Identity;
+	using Microsoft.AspNetCore.Authorization;
+	using Microsoft.AspNetCore.Mvc.Authorization;
 
-    using DatingApp.API.Data;
+	using DatingApp.API.Data;
     using DatingApp.API.Helpers;
+    using DatingApp.API.Models;
 
     public class Startup {
 		public Startup(IConfiguration configuration, IHostingEnvironment env) {
@@ -41,31 +45,19 @@
 
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services) {
-			services.AddDbContext<DataContext>(i =>
-				i
-					.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection"))
-					.ConfigureWarnings(w => w.Ignore(CoreEventId.IncludeIgnoredWarning))
-				);
+			IdentityBuilder builder = services.AddIdentityCore<User>(options => {
+				PasswordOptions po = options.Password;
+				po.RequireDigit = false;
+				po.RequiredLength = 4;
+				po.RequireNonAlphanumeric = false;
+				po.RequireUppercase = false;
+			});
 
-			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
-				.AddJsonOptions(o => {
-					o.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-				});
-
-			services.AddCors();
-
-            services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
-
-			services.AddAutoMapper(typeof(Startup).Assembly);
-
-			services.AddTransient<Seed>();
-
-			services.AddScoped<IAuthRepository, AuthRepository>();
-
-			services.AddScoped<IDatingRepository, DatingRepository>();
-
-			services.AddScoped<LogUserActivityFilter>();
-
+			builder = new IdentityBuilder(builder.UserType, typeof(Role), services);
+			builder.AddEntityFrameworkStores<DataContext>();
+			builder.AddRoleValidator<RoleValidator<Role>>();
+			builder.AddRoleManager<RoleManager<Role>>();
+			builder.AddSignInManager<SignInManager<User>>();
 			services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 				.AddJwtBearer(option => {
 					option.TokenValidationParameters = new TokenValidationParameters {
@@ -76,49 +68,37 @@
 						ValidateAudience = false
 					};
 				});
-		}
 
-		public void ConfigureDevelopmentServices(IServiceCollection services) {
-			services.AddDbContext<DataContext>(i =>
-				i
-					.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection"))
+			services.AddDbContext<DataContext>(options =>
+				options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection"))
 					.ConfigureWarnings(w => w.Ignore(CoreEventId.IncludeIgnoredWarning))
 				);
 
-			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+			services
+				.AddMvc(options => {
+					var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+					options.Filters.Add(new AuthorizeFilter(policy));
+				})
+				.SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
 				.AddJsonOptions(o => {
 					o.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
 				});
 
 			services.AddCors();
 
-            services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
+            services.Configure<CloudinarySettings>(this.Configuration.GetSection("CloudinarySettings"));
 
 			services.AddAutoMapper(typeof(Startup).Assembly);
-
-			services.AddTransient<Seed>();
 
 			services.AddScoped<IAuthRepository, AuthRepository>();
 
 			services.AddScoped<IDatingRepository, DatingRepository>();
 
 			services.AddScoped<LogUserActivityFilter>();
-
-			services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-				.AddJwtBearer(option => {
-					option.TokenValidationParameters = new TokenValidationParameters {
-						ValidateIssuerSigningKey = true,
-						IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(
-							this.Configuration.GetSection("AppSettings:Token").Value)),
-						ValidateIssuer = false,
-						ValidateAudience = false
-					};
-				});
 		}
-
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-		public void Configure(IApplicationBuilder app, IHostingEnvironment env, Seed seeder) {
+		public void Configure(IApplicationBuilder app, IHostingEnvironment env/*, UserManager<User> manager*/) {
 			if(env.IsDevelopment()) {
 				app.UseDeveloperExceptionPage();
 			} else {
@@ -138,7 +118,7 @@
 			}
 
 			// app.UseHttpsRedirection();
-			seeder.SeedUsers();
+			//Seed.SeedUsers(manager);
 			app.UseCors(x => x
 				.AllowAnyOrigin()
 				.AllowAnyMethod()

@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace DatingApp.API.Controllers {
 	[ServiceFilter(typeof(LogUserActivityFilter))]
-	[Authorize]
 	[Route("api/users/{userId}/[controller]")]
 	[ApiController]
 	public class MessagesController : ControllerBase {

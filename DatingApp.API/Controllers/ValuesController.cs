@@ -9,7 +9,6 @@
 
 	using DatingApp.API.Data;
 
-	[Authorize]
 	[Route("api/[controller]")]
 	[ApiController]
 	public class ValuesController : ControllerBase {
