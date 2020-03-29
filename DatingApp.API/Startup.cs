@@ -56,7 +56,7 @@
 
             services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
 
-			services.AddAutoMapper();
+			services.AddAutoMapper(typeof(Startup).Assembly);
 
 			services.AddTransient<Seed>();
 
@@ -80,7 +80,10 @@
 
 		public void ConfigureDevelopmentServices(IServiceCollection services) {
 			services.AddDbContext<DataContext>(i =>
-				i.UseSqlite(this.Configuration.GetConnectionString("DefaultConnection")));
+				i
+					.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection"))
+					.ConfigureWarnings(w => w.Ignore(CoreEventId.IncludeIgnoredWarning))
+				);
 
 			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
 				.AddJsonOptions(o => {
@@ -91,7 +94,7 @@
 
             services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
 
-			services.AddAutoMapper();
+			services.AddAutoMapper(typeof(Startup).Assembly);
 
 			services.AddTransient<Seed>();
 
