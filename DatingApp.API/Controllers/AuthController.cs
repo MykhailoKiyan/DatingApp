@@ -19,7 +19,7 @@
 	using DatingApp.API.Dtos;
 	using DatingApp.API.Utilities.ExtensionMethods;
 
-    [Route("api/[controller]")]
+	[Route("api/[controller]")]
 	[ApiController]
 	[AllowAnonymous]
 	public class AuthController : ControllerBase {

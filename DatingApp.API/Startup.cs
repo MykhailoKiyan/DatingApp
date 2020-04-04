@@ -69,6 +69,12 @@
 					};
 				});
 
+			services.AddAuthorization(options => {
+				options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
+				options.AddPolicy("RequireModeratorPhotoRole", policy => policy.RequireRole("Admin", "Moderator"));
+				options.AddPolicy("VipOnly", policy => policy.RequireRole("VIP"));
+			});
+
 			services.AddDbContext<DataContext>(options =>
 				options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection"))
 					.ConfigureWarnings(w => w.Ignore(CoreEventId.IncludeIgnoredWarning))
