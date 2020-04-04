@@ -20,14 +20,14 @@
 
 		// GET api/values
 		[HttpGet]
-		[AllowAnonymous]
+		[Authorize(Roles = "Admin, Member")]
 		public async Task<IActionResult> GetValues() {
 			var values = await this.context.Values.ToListAsync();
 			return this.Ok(values);
 		}
 
 		// GET api/values/5
-		[AllowAnonymous]
+		[Authorize(Roles = "Admin")]
 		[HttpGet("{id}")]
 		public async Task<IActionResult> GetValue(int id) {
 			var value =

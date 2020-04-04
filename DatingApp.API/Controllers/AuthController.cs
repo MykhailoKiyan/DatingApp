@@ -57,14 +57,18 @@
 			var result = await this.signInManager.CheckPasswordSignInAsync(user, userDto.Password, false);
 			if (!result.Succeeded) return this.Unauthorized();
 			var userForReturn = this.mapper.Map<UserForListDto>(user);
-			return this.Ok(new { token = this.GenerateJwtToken(user), user = userForReturn });
+			return this.Ok(new { token = await this.GenerateJwtToken(user), user = userForReturn });
 		}
 
-		private string GenerateJwtToken(User user) {
-			var claims = new[] {
+		private async Task<string> GenerateJwtToken(User user) {
+			var claims = new List<Claim> {
 				new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
 				new Claim(ClaimTypes.Name, user.UserName)
 			};
+			var roles = await this.userManager.GetRolesAsync(user);
+			foreach (var role in roles) {
+				claims.Add(new Claim(ClaimTypes.Role, role));
+			}
 
 			var tokenSecret = this.configuration.GetSection("AppSettings:Token").Value;
 			var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenSecret));
