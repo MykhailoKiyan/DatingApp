@@ -90,8 +90,6 @@
 
 			services.AddAutoMapper(typeof(Startup).Assembly);
 
-			services.AddScoped<IAuthRepository, AuthRepository>();
-
 			services.AddScoped<IDatingRepository, DatingRepository>();
 
 			services.AddScoped<LogUserActivityFilter>();
