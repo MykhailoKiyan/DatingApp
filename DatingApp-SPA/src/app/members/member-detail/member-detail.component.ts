@@ -51,13 +51,17 @@ export class MemberDetailComponent implements OnInit {
 		const imageUrls = [];
 		for (let i = 0; i < this.user.photos.length; i++) {
 			imageUrls.push({
-				small: this.user.photos[i].url,
-				medium: this.user.photos[i].url,
-				big: this.user.photos[i].url,
-				description: this.user.photos[i].description
+				small: this.getSefeString(this.user.photos[i].url),
+				medium: this.getSefeString(this.user.photos[i].url),
+				big: this.getSefeString(this.user.photos[i].url),
+				description: this.getSefeString(this.user.photos[i].description)
 			});
 		}
 		return imageUrls;
+	}
+
+	getSefeString(input: any): string {
+		return input ? input : '';
 	}
 
 	selectTab(tabId: number) {
