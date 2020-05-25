@@ -1,61 +1,47 @@
 import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { User } from '../../_models/user';
 import { ActivatedRoute } from '@angular/router';
-
-import { User } from 'src/app/_models/user';
-import { AlertifyService } from 'src/app/_services/alertify.service';
-import { UserService } from 'src/app/_services/user.service';
-import { AuthService } from 'src/app/_services/auth.service';
+import { AlertifyService } from '../../_services/alertify.service';
+import { NgForm } from '@angular/forms';
+import { UserService } from '../../_services/user.service';
+import { AuthService } from '../../_services/auth.service';
 
 @Component({
-	selector: 'app-member-edit',
-	templateUrl: './member-edit.component.html',
-	styleUrls: ['./member-edit.component.css']
+  selector: 'app-member-edit',
+  templateUrl: './member-edit.component.html',
+  styleUrls: ['./member-edit.component.css']
 })
 export class MemberEditComponent implements OnInit {
-	user: User;
+  @ViewChild('editForm', {static: true}) editForm: NgForm;
+  user: User;
+  photoUrl: string;
+  @HostListener('window:beforeunload', ['$event'])
+  unloadNotification($event: any) {
+    if (this.editForm.dirty) {
+      $event.returnValue = true;
+    }
+  }
 
-	@ViewChild('editForm')
-	editForm: NgForm;
+  constructor(private route: ActivatedRoute, private alertify: AlertifyService,
+    private userService: UserService, private authService: AuthService) { }
 
-	photoUrl: string;
+  ngOnInit() {
+    this.route.data.subscribe(data => {
+      this.user = data['user'];
+    });
+    this.authService.currentPhotoUrl.subscribe(photoUrl => this.photoUrl = photoUrl);
+  }
 
-	@HostListener('window:beforeunload', ['$event'])
-	unloadNotification($event: any) {
-		if (this.editForm.dirty) {
-			$event.returnValue = true;
-		}
-	}
+  updateUser() {
+    this.userService.updateUser(this.authService.decodedToken.nameid, this.user).subscribe(next => {
+      this.alertify.success('Profile updated successfully');
+      this.editForm.reset(this.user);
+    }, error => {
+      this.alertify.error(error);
+    });
+  }
 
-	constructor(
-			private route: ActivatedRoute,
-			private alertify: AlertifyService,
-			private userService: UserService,
-			private authService: AuthService) { }
-
-	ngOnInit() {
-		this.route.data.subscribe(data => {
-			this.user = data['user'];
-		});
-		this.authService.currentPhotoUrl.subscribe(url => this.photoUrl = url);
-	}
-
-	updateUser() {
-		const userId: number = +this.authService.decodedToken.nameid;
-		this.userService
-			.updateUser(userId, this.user)
-			.subscribe(
-				next => {
-					this.alertify.success('User updated successfully!');
-					this.editForm.reset(this.user);
-				},
-				error => {
-					this.alertify.error(error);
-				}
-			);
-	}
-
-	updateMainPhoto(photoUrl: string) {
-		this.user.photoUrl = photoUrl;
-	}
+  updateMainPhoto(photoUrl) {
+    this.user.photoUrl = photoUrl;
+  }
 }

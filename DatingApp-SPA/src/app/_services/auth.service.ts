@@ -1,62 +1,61 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
+import {BehaviorSubject} from 'rxjs';
 import { map } from 'rxjs/operators';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { environment } from '../../environments/environment';
 import { User } from '../_models/user';
 
-
 @Injectable({
-	providedIn: 'root'
+  providedIn: 'root'
 })
 export class AuthService {
-	baseUrl = environment.baseUrl + 'auth/';
-	decodedToken: any;
-	jwtHelper = new JwtHelperService();
-	currentUser: User;
-	photoUrl: BehaviorSubject<string> = new BehaviorSubject<string>('../../assets/user.png');
-	currentPhotoUrl: Observable<string> = this.photoUrl.asObservable();
+  baseUrl = environment.apiUrl + 'auth/';
+  jwtHelper = new JwtHelperService();
+  decodedToken: any;
+  currentUser: User;
+  photoUrl = new BehaviorSubject<string>('../../assets/user.png');
+  currentPhotoUrl = this.photoUrl.asObservable();
 
-	constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
-	changeMemberPhoto(url: string) {
-		this.photoUrl.next(url);
-	}
+  changeMemberPhoto(photoUrl: string) {
+    this.photoUrl.next(photoUrl);
+  }
 
-	login(model: any) {
-		return this.http.post(this.baseUrl + 'login', model).pipe(map(
-			(response: any) => {
-				const res = response;
-				if (res) {
-					localStorage.setItem('token', res.token);
-					localStorage.setItem('user', JSON.stringify(res.user));
-					this.decodedToken = this.jwtHelper.decodeToken(res.token);
-					this.currentUser = res.user;
-					this.changeMemberPhoto(this.currentUser.photoUrl);
-				}
-			})
-		);
-	}
+  login(model: any) {
+    return this.http.post(this.baseUrl + 'login', model).pipe(
+      map((response: any) => {
+        const user = response;
+        if (user) {
+          localStorage.setItem('token', user.token);
+          localStorage.setItem('user', JSON.stringify(user.user));
+          this.decodedToken = this.jwtHelper.decodeToken(user.token);
+          this.currentUser = user.user;
+          this.changeMemberPhoto(this.currentUser.photoUrl);
+        }
+      })
+    );
+  }
 
-	register(user: User) {
-		return this.http.post(this.baseUrl + 'register', user);
-	}
+  register(user: User) {
+    return this.http.post(this.baseUrl + 'register', user);
+  }
 
-	loggedIn() {
-		const token = localStorage.getItem('token');
-		return !this.jwtHelper.isTokenExpired(token);
-	}
+  loggedIn() {
+    const token = localStorage.getItem('token');
+    return !this.jwtHelper.isTokenExpired(token);
+  }
 
-	roleMatch(allowedRoles: string[]): boolean {
-		const userRoles = this.decodedToken.role as string[];
-		var isMatch = false;
-		allowedRoles.forEach(role => {
-			if (userRoles.includes(role)) {
-				isMatch = true;
-				return;
-			};
-		});
-		return isMatch;
-	}
+  roleMatch(allowedRoles): boolean {
+    let isMatch = false;
+    const userRoles = this.decodedToken.role as Array<string>;
+    allowedRoles.forEach(element => {
+      if (userRoles.includes(element)) {
+        isMatch = true;
+        return;
+      }
+    });
+    return isMatch;
+  }
 }

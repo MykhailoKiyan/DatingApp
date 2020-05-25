@@ -4,47 +4,43 @@ import { AlertifyService } from '../_services/alertify.service';
 import { Router } from '@angular/router';
 
 @Component({
-	selector: 'app-nav',
-	templateUrl: './nav.component.html',
-	styleUrls: ['./nav.component.css']
+  selector: 'app-nav',
+  templateUrl: './nav.component.html',
+  styleUrls: ['./nav.component.css']
 })
 export class NavComponent implements OnInit {
-	model: any = {};
-	photoUrl: string;
+  model: any = {};
+  photoUrl: string;
 
-	constructor(public authService: AuthService, private alertify: AlertifyService, private router: Router) { }
+  constructor(public authService: AuthService, private alertify: AlertifyService,
+      private router: Router) { }
 
-	ngOnInit() {
-		this.authService.currentPhotoUrl.subscribe(url => this.photoUrl = url);
-	}
+  ngOnInit() {
+    this.authService.currentPhotoUrl.subscribe(photoUrl => this.photoUrl = photoUrl);
+  }
 
-	login() {
-		this.authService.login(this.model).subscribe(
-			// next
-			() => {
-				this.alertify.success('Logged is successfully');
-			},
-			// error
-			err => {
-				this.alertify.error(err);
-			},
-			// complete
-			() => {
-				this.router.navigate(['/members']);
-			}
-		);
-	}
+  login() {
+    this.authService.login(this.model).subscribe(next => {
+      this.alertify.success('Logged in successfully');
+    }, error => {
+      this.alertify.error(error);
+    }, () => {
+      this.router.navigate(['/members']);
+    });
+  }
 
-	loggedIn() {
-		return this.authService.loggedIn();
-	}
+  loggedIn() {
+    const token = localStorage.getItem('token');
+    return !!token;
+  }
 
-	logout() {
-		localStorage.removeItem('token');
-		this.authService.decodedToken = null;
-		localStorage.removeItem('user');
-		this.authService.currentUser = null;
-		this.alertify.message('Logged out');
-		this.router.navigate(['/home']);
-	}
+  logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    this.authService.decodedToken = null;
+    this.authService.currentUser = null;
+    this.alertify.message('logged out');
+    this.router.navigate(['/home']);
+  }
+
 }
