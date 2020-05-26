@@ -1,61 +1,66 @@
-﻿namespace DatingApp.API.Data {
-    using Microsoft.AspNetCore.Identity;
-    using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore;
+using DatingApp.API.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
-	using DatingApp.API.Models;
+namespace DatingApp.API.Data
+{
+    public class DataContext : IdentityDbContext<User, Role, int, 
+        IdentityUserClaim<int>, UserRole, IdentityUserLogin<int>, 
+        IdentityRoleClaim<int>, IdentityUserToken<int>>
+    {
+        public DataContext(DbContextOptions<DataContext>  options) : base (options) {}
 
-	public class DataContext : IdentityDbContext<User, Role, int,
-			IdentityUserClaim<int>, UserRole, IdentityUserLogin<int>, IdentityRoleClaim<int>, IdentityUserToken<int>> {
-		public DataContext(DbContextOptions<DataContext> options) : base(options) { }
+        public DbSet<Value> Values { get; set; }
+        public DbSet<Photo> Photos { get; set; }
+        public DbSet<Like> Likes { get; set; }
+        public DbSet<Message> Messages { get; set; }
 
-		public DbSet<Value> Values { get; set; }
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
 
-		public DbSet<Photo> Photos { get; set; }
+            builder.Entity<UserRole>(userRole => 
+            {
+                userRole.HasKey(ur => new {ur.UserId, ur.RoleId});
 
-		public DbSet<Like> Likes { get; set; }
+                userRole.HasOne(ur => ur.Role)
+                    .WithMany(r => r.UserRoles)
+                    .HasForeignKey(ur => ur.RoleId)
+                    .IsRequired();
 
-		public DbSet<Message> Messages { get; set; }
+                userRole.HasOne(ur => ur.User)
+                    .WithMany(r => r.UserRoles)
+                    .HasForeignKey(ur => ur.UserId)
+                    .IsRequired();
+            });
 
-		protected override void OnModelCreating(ModelBuilder modelBuilder) {
-			base.OnModelCreating(modelBuilder);
+            builder.Entity<Like>()
+                .HasKey(k => new {k.LikerId, k.LikeeId});
 
-			modelBuilder.Entity<UserRole>(entity => {
-				entity.HasKey(k => new { k.UserId, k.RoleId });
-				entity.HasOne(p => p.Role)
-					.WithMany(p => p.UserRoles)
-					.HasForeignKey(k => k.RoleId)
-					.IsRequired();
-				entity.HasOne(p => p.User)
-					.WithMany(p => p.UserRoles)
-					.HasForeignKey(k => k.UserId)
-					.IsRequired();
-			});
+            builder.Entity<Like>()
+                .HasOne(u => u.Likee)
+                .WithMany(u => u.Likers)
+                .HasForeignKey(u => u.LikeeId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-			modelBuilder.Entity<Like>()
-				.HasKey(key => new { key.LikerId, key.LikeeId });
+            builder.Entity<Like>()
+                .HasOne(u => u.Liker)
+                .WithMany(u => u.Likees)
+                .HasForeignKey(u => u.LikerId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            builder.Entity<Message>()
+                .HasOne(u => u.Sender)
+                .WithMany(m => m.MessagesSent)
+                .OnDelete(DeleteBehavior.Restrict);
 
-			modelBuilder.Entity<Like>()
-				.HasOne(user => user.Likee)
-				.WithMany(user => user.Likers)
-				.HasForeignKey(user => user.LikeeId)
-				.OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<Message>()
+                .HasOne(u => u.Recipient)
+                .WithMany(m => m.MessagesReceived)
+                .OnDelete(DeleteBehavior.Restrict);
 
-			modelBuilder.Entity<Like>()
-				.HasOne(user => user.Liker)
-				.WithMany(user => user.Likees)
-				.HasForeignKey(user => user.LikerId)
-				.OnDelete(DeleteBehavior.Restrict);
-
-			modelBuilder.Entity<Message>()
-				.HasOne(u => u.Sender)
-				.WithMany(m => m.MessagesSent)
-				.OnDelete(DeleteBehavior.Restrict);
-
-			modelBuilder.Entity<Message>()
-				.HasOne(u => u.Recipient)
-				.WithMany(m => m.MessagesRecived)
-				.OnDelete(DeleteBehavior.Restrict);
-		}
-	}
+            builder.Entity<Photo>().HasQueryFilter(p => p.IsApproved);
+        }
+    }
 }
